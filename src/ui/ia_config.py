@@ -1,13 +1,14 @@
 # src/ui/ia_config.py
-# BLOCO 10B - Conecta botão "Aplicar Teste" ao módulo de IA com imagem de teste
+# BLOCO 10C (Parte 2) - Integração da aba IA com opção de API real
 
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QCheckBox,
-    QComboBox, QMessageBox
+    QComboBox, QMessageBox, QLineEdit
 )
 from PyQt6.QtGui import QPixmap
 import os
 from src.modules.image_processor import aplicar_ia_em_imagem
+from src.modules.ia_real import processar_ia_via_api
 
 class IAConfig(QWidget):
     def __init__(self, config_manager):
@@ -26,6 +27,19 @@ class IAConfig(QWidget):
         layout.addWidget(QLabel("Estilo de IA:") )
         layout.addWidget(self.combo_estilo)
 
+        # Modo de execução
+        layout.addWidget(QLabel("Modo de execução da IA:"))
+        self.combo_modo = QComboBox()
+        self.combo_modo.addItems(["Simulado (offline)", "IA Real (API)"])
+        layout.addWidget(self.combo_modo)
+
+        # Campo de API Key (opcional)
+        self.input_api = QLineEdit()
+        self.input_api.setPlaceholderText("API Key da plataforma externa")
+        layout.addWidget(QLabel("API Key (para IA real):"))
+        layout.addWidget(self.input_api)
+
+        # Miniatura do estilo
         self.preview = QLabel()
         self.preview.setFixedSize(150, 150)
         self.preview.setScaledContents(True)
@@ -35,6 +49,7 @@ class IAConfig(QWidget):
         self.combo_estilo.currentTextChanged.connect(self.atualizar_preview)
         self.atualizar_preview(self.combo_estilo.currentText())
 
+        # Botões inferiores
         botoes = QHBoxLayout()
         self.btn_salvar = QPushButton("Salvar")
         self.btn_salvar.clicked.connect(self.salvar)
@@ -64,11 +79,17 @@ class IAConfig(QWidget):
         estilo = self.config.get("estilo", "Cartoon")
         if estilo in self.estilos:
             self.combo_estilo.setCurrentText(estilo)
+
+        self.combo_modo.setCurrentIndex(self.config.get("modo", 0))
+        self.input_api.setText(self.config.get("api_key", ""))
+
         self.atualizar_preview(estilo)
 
     def salvar(self):
         self.config["ativa"] = self.checkbox_ativa.isChecked()
         self.config["estilo"] = self.combo_estilo.currentText()
+        self.config["modo"] = self.combo_modo.currentIndex()
+        self.config["api_key"] = self.input_api.text()
         self.config_manager.salvar_config()
         QMessageBox.information(self, "Salvo", "Configuração de IA salva com sucesso.")
 
@@ -84,10 +105,16 @@ class IAConfig(QWidget):
 
         estilo = self.combo_estilo.currentText()
         entrada = "assets/teste.jpg"
-        saida = "assets/teste_processado.jpg"
+        saida = "assets/teste_ia_processado.jpg"
 
-        sucesso = aplicar_ia_em_imagem(entrada, saida, estilo)
-        if sucesso:
-            QMessageBox.information(self, "Teste aplicado", f"Estilo '{estilo}' aplicado na imagem de teste.")
+        modo = self.combo_modo.currentIndex()
+        if modo == 0:
+            sucesso = aplicar_ia_em_imagem(entrada, saida, estilo)
         else:
-            QMessageBox.critical(self, "Erro", "Falha ao aplicar IA na imagem de teste.")
+            api_key = self.input_api.text()
+            sucesso = processar_ia_via_api(entrada, saida, estilo, api_key)
+
+        if sucesso:
+            QMessageBox.information(self, "Teste aplicado", f"Estilo '{estilo}' aplicado com sucesso.")
+        else:
+            QMessageBox.critical(self, "Erro", "Falha ao aplicar IA.")
