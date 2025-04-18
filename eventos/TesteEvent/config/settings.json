@@ -1,4 +1,16 @@
 {
-  "ia": { "ativa": false },
-  "layout": { "modelo": 0, "posicao": 0, "borda": false }
+  "nome": "Evento de Teste",
+  "data": "2025-04-18",
+  "compartilhamento": {
+    "whatsapp_ativo": false,
+    "whatsapp_numero": "",
+    "backup_ativo": false,
+    "backup_pasta": ""
+  },
+  "impressao": {
+    "auto_imprimir": false
+  },
+  "ia": {
+    "ativar": false
+  }
 }
