@@ -1,5 +1,5 @@
 # src/ui/main_window.py
-# BLOCO 5.2 - Botão WhatsApp na galeria (ação simulada com integração ao módulo real)
+# BLOCO 7 - Integra configurações de WhatsApp na galeria (verifica se envio está ativado e usa número configurado)
 
 import os
 from PyQt6.QtWidgets import (
@@ -20,8 +20,9 @@ class MainWindow(QWidget):
         self.setMinimumSize(1000, 700)
 
         self.pasta_fotos = os.path.join("eventos", self.controller.evento_atual, "Fotos")
+        self.config = self.controller.config_manager.config.get("compartilhamento", {})
         self.print_counter = PrintCounter(self.controller.evento_atual)
-        self.limite_copias = 3  # Limite fixo por imagem (poderá ser carregado de config futuramente)
+        self.limite_copias = 3
 
         self.layout_principal = QVBoxLayout(self)
         self.label_evento = QLabel(f"Evento atual: {self.controller.evento_atual}")
@@ -111,5 +112,15 @@ class MainWindow(QWidget):
                 self.carregar_galeria()
 
     def acao_whatsapp(self, caminho):
-        numero_simulado = "+5511999999999"
-        enviar_por_whatsapp(numero_simulado, caminho)
+        if not self.config.get("whatsapp_ativo"):
+            QMessageBox.warning(self, "WhatsApp desativado", "O envio por WhatsApp está desativado nas configurações.")
+            return
+
+        numero = self.config.get("whatsapp_numero", "")
+        if not numero:
+            QMessageBox.warning(self, "Número ausente", "Nenhum número foi configurado para envio.")
+            return
+
+        enviado = enviar_por_whatsapp(numero, caminho)
+        if enviado:
+            QMessageBox.information(self, "Enviado", f"Imagem enviada para {numero}.")
