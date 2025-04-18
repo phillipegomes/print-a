@@ -1,5 +1,5 @@
 # src/ui/main_window.py
-# BLOCO 4B - Galeria com contador de impressão e limite por imagem
+# BLOCO 5.2 - Botão WhatsApp na galeria (ação simulada com integração ao módulo real)
 
 import os
 from PyQt6.QtWidgets import (
@@ -10,6 +10,7 @@ from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
 from src.ui.main_actions import carregar_imagens, imprimir_foto, excluir_foto
 from src.modules.print_counter import PrintCounter
+from src.modules.whatsapp_sender import enviar_por_whatsapp
 
 class MainWindow(QWidget):
     def __init__(self, controller):
@@ -74,9 +75,13 @@ class MainWindow(QWidget):
             btn_excluir = QPushButton("Excluir")
             btn_excluir.clicked.connect(lambda _, c=caminho: self.acao_excluir(c))
 
+            btn_whatsapp = QPushButton("WhatsApp")
+            btn_whatsapp.clicked.connect(lambda _, c=caminho: self.acao_whatsapp(c))
+
             botoes = QHBoxLayout()
             botoes.addWidget(btn_imprimir)
             botoes.addWidget(spin)
+            botoes.addWidget(btn_whatsapp)
             botoes.addWidget(btn_excluir)
 
             caixa = QVBoxLayout()
@@ -104,3 +109,7 @@ class MainWindow(QWidget):
         if confirm == QMessageBox.StandardButton.Yes:
             if excluir_foto(caminho):
                 self.carregar_galeria()
+
+    def acao_whatsapp(self, caminho):
+        numero_simulado = "+5511999999999"
+        enviar_por_whatsapp(numero_simulado, caminho)
