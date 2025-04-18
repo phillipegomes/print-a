@@ -1,5 +1,5 @@
 # src/ui/ia_config.py
-# BLOCO 9.2 - Aba de IA com seleção de estilo, miniaturas e botão "Aplicar Teste"
+# BLOCO 10B - Conecta botão "Aplicar Teste" ao módulo de IA com imagem de teste
 
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QCheckBox,
@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import QPixmap
 import os
+from src.modules.image_processor import aplicar_ia_em_imagem
 
 class IAConfig(QWidget):
     def __init__(self, config_manager):
@@ -25,7 +26,6 @@ class IAConfig(QWidget):
         layout.addWidget(QLabel("Estilo de IA:") )
         layout.addWidget(self.combo_estilo)
 
-        # Miniaturas por estilo
         self.preview = QLabel()
         self.preview.setFixedSize(150, 150)
         self.preview.setScaledContents(True)
@@ -35,7 +35,6 @@ class IAConfig(QWidget):
         self.combo_estilo.currentTextChanged.connect(self.atualizar_preview)
         self.atualizar_preview(self.combo_estilo.currentText())
 
-        # Botões Salvar / Reverter / Aplicar Teste
         botoes = QHBoxLayout()
         self.btn_salvar = QPushButton("Salvar")
         self.btn_salvar.clicked.connect(self.salvar)
@@ -79,4 +78,16 @@ class IAConfig(QWidget):
         QMessageBox.information(self, "Revertido", "Valores de IA revertidos para padrão.")
 
     def aplicar_teste(self):
-        QMessageBox.information(self, "IA Teste", f"Simulando aplicação do estilo '{self.combo_estilo.currentText()}' em imagem padrão.")
+        if not self.checkbox_ativa.isChecked():
+            QMessageBox.warning(self, "IA desativada", "A IA está desativada. Ative-a para testar.")
+            return
+
+        estilo = self.combo_estilo.currentText()
+        entrada = "assets/teste.jpg"
+        saida = "assets/teste_processado.jpg"
+
+        sucesso = aplicar_ia_em_imagem(entrada, saida, estilo)
+        if sucesso:
+            QMessageBox.information(self, "Teste aplicado", f"Estilo '{estilo}' aplicado na imagem de teste.")
+        else:
+            QMessageBox.critical(self, "Erro", "Falha ao aplicar IA na imagem de teste.")
