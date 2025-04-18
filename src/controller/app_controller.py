@@ -1,33 +1,19 @@
 # src/controller/app_controller.py
-# BLOCO FIX – Garantir que config_manager exista antes de chamar MainWindow
-
-import os
 from src.ui.event_window import EventWindow
 from src.ui.main_window import MainWindow
-from src.modules.config_loader import carregar_config_evento
-from src.modules.file_watcher import FileWatcher
+from src.modules.config_manager import ConfigManager
 
 class AppController:
     def __init__(self):
-        self.evento_path = "eventos/TesteEvent"
-        self.config_path = os.path.join(self.evento_path, "config", "settings.json")
-        
-        # ✅ Criação do config_manager ANTES de qualquer uso
-        from src.modules.config_manager import ConfigManager
-        self.config_manager = ConfigManager(self.config_path)
+        caminho_config = "eventos/TesteEvent/config/settings.json"
+        self.config_manager = ConfigManager(caminho_config)
+        self.event_window = EventWindow(controller=self)
+        self.main_window = None
 
-        self.config = self.config_manager.config
-        
-        # ✅ Inicialização correta do monitoramento com callback
-        self.monitor = FileWatcher(
-            pasta_fotos=os.path.join(self.evento_path, "Fotos"),
-            config=self.config,
-            callback=self.pipeline_processamento  # ← já definido na própria classe
-        )
-        self.monitor.iniciar()
+    def start(self):
+        self.event_window.show()
 
-        # ✅ Cria a janela principal com o controller contendo config_manager
-        self.main_window = MainWindow(controller=self)
-
-    def pipeline_processamento(self, caminho_imagem):
-        print(f"[PIPELINE] (simulado) Processando {caminho_imagem}")
+    def abrir_main_window(self, config):
+        self.main_window = MainWindow(evento_path="eventos/TesteEvent", controller=self)
+        self.main_window.show()
+        self.event_window.close()
