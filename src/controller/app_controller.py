@@ -1,53 +1,33 @@
 # src/controller/app_controller.py
-# AppController com FileWatcher ativo para evento de teste
+# BLOCO FIX – Garantir que config_manager exista antes de chamar MainWindow
 
 import os
-import json
-from PyQt6.QtWidgets import QWidget, QStackedLayout
+from src.ui.event_window import EventWindow
 from src.ui.main_window import MainWindow
+from src.modules.config_loader import carregar_config_evento
 from src.modules.file_watcher import FileWatcher
 
-class AppController(QWidget):
+class AppController:
     def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Print A - Evento Teste")
-        self.setGeometry(100, 100, 1200, 800)
-
-        self.layout = QStackedLayout(self)
-
-        # Caminho do evento de teste (você pode trocar depois)
-        self.evento_nome = "TesteEvent"
-        self.evento_path = os.path.join("eventos", self.evento_nome)
+        self.evento_path = "eventos/TesteEvent"
         self.config_path = os.path.join(self.evento_path, "config", "settings.json")
+        
+        # ✅ Criação do config_manager ANTES de qualquer uso
+        from src.modules.config_manager import ConfigManager
+        self.config_manager = ConfigManager(self.config_path)
 
-        # Carrega as configurações do evento
-        self.config = self.carregar_config()
-
-        # Tela principal com galeria (ainda pode estar básica)
-        self.main_window = MainWindow(self.evento_path, self.config)
-        self.layout.addWidget(self.main_window)
-
-        # Inicia o monitoramento de novas fotos
-        self.iniciar_monitoramento()
-
-    def carregar_config(self):
-        if not os.path.exists(self.config_path):
-            print(f"[CONFIG] Arquivo não encontrado: {self.config_path}")
-            return {}
-        try:
-            with open(self.config_path, "r") as f:
-                print(f"[CONFIG] Configurações carregadas: {self.config_path}")
-                return json.load(f)
-        except Exception as e:
-            print(f"[CONFIG] Erro ao carregar config: {e}")
-            return {}
-
-    def iniciar_monitoramento(self):
-        pasta_fotos = os.path.join(self.evento_path, "Fotos")
+        self.config = self.config_manager.config
+        
+        # ✅ Inicialização correta do monitoramento com callback
         self.monitor = FileWatcher(
-            pasta_fotos=pasta_fotos,
+            pasta_fotos=os.path.join(self.evento_path, "Fotos"),
             config=self.config,
-            callback=self.main_window.imagem_processada_callback if hasattr(self.main_window, "imagem_processada_callback") else None
+            callback=self.pipeline_processamento  # ← já definido na própria classe
         )
         self.monitor.iniciar()
-        print(f"[MONITOR] Observando {pasta_fotos}...")
+
+        # ✅ Cria a janela principal com o controller contendo config_manager
+        self.main_window = MainWindow(controller=self)
+
+    def pipeline_processamento(self, caminho_imagem):
+        print(f"[PIPELINE] (simulado) Processando {caminho_imagem}")
