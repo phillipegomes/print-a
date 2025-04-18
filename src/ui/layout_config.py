@@ -1,9 +1,11 @@
 # src/ui/layout_config.py
-# BLOCO 11 - Aba de Layout com opções visuais (mockup inicial)
+# BLOCO 11.3 – Botão de Preview na aba Layout
 
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QHBoxLayout, QPushButton, QComboBox, QCheckBox
 )
+from src.ui.layout_preview import LayoutPreview
+import os
 
 class LayoutConfig(QWidget):
     def __init__(self, config_manager):
@@ -33,8 +35,12 @@ class LayoutConfig(QWidget):
         self.btn_reverter = QPushButton("Reverter")
         self.btn_reverter.clicked.connect(self.reverter)
 
+        self.btn_preview = QPushButton("Visualizar Layout")
+        self.btn_preview.clicked.connect(self.abrir_preview)
+
         botoes.addWidget(self.btn_salvar)
         botoes.addWidget(self.btn_reverter)
+        botoes.addWidget(self.btn_preview)
         layout.addLayout(botoes)
 
         self.carregar()
@@ -53,3 +59,17 @@ class LayoutConfig(QWidget):
     def reverter(self):
         self.config.clear()
         self.carregar()
+
+    def abrir_preview(self):
+        caminho_foto = "assets/teste.jpg"
+        modelo = self.combo_modelo.currentIndex()
+        layout_file = f"assets/layouts/layout{modelo + 1}.png"
+        posicao = self.combo_posicao.currentText()
+        borda = self.check_borda.isChecked()
+
+        if not os.path.exists(caminho_foto) or not os.path.exists(layout_file):
+            print("[Preview] Arquivo de teste ou layout não encontrado.")
+            return
+
+        self.preview_window = LayoutPreview(caminho_foto, layout_file, posicao, borda)
+        self.preview_window.show()

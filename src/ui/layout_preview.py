@@ -1,55 +1,49 @@
-# src/ui/layout_config.py
-# BLOCO 11 - Aba de Layout com opções visuais (mockup inicial)
+# src/ui/layout_preview.py
+# BLOCO 11.2 – Preview do Layout com aplicação de moldura estilo photobooth
 
-from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QHBoxLayout, QPushButton, QComboBox, QCheckBox
-)
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
+from PyQt6.QtGui import QPixmap, QImage
+from PyQt6.QtCore import Qt
+from PIL import Image, ImageQt, ImageOps
+import os
 
-class LayoutConfig(QWidget):
-    def __init__(self, config_manager):
+def aplicar_layout_em_imagem(caminho_foto, caminho_layout, posicao="Centro", borda=False):
+    """
+    Aplica um layout PNG transparente sobre uma imagem base.
+    """
+    try:
+        base = Image.open(caminho_foto).convert("RGBA")
+        layout = Image.open(caminho_layout).convert("RGBA")
+
+        if borda:
+            base = ImageOps.expand(base, border=20, fill="white")
+            layout = layout.resize(base.size)
+
+        else:
+            layout = layout.resize(base.size)
+
+        combinada = Image.alpha_composite(base, layout)
+        return combinada
+
+    except Exception as e:
+        print(f"[LAYOUT] Erro ao aplicar layout: {e}")
+        return None
+
+class LayoutPreview(QWidget):
+    def __init__(self, caminho_foto, caminho_layout, posicao="Centro", borda=False):
         super().__init__()
-        self.config_manager = config_manager
-        self.config = self.config_manager.config.setdefault("layout", {})
+        self.setWindowTitle("Preview do Layout")
+        self.setMinimumSize(400, 400)
 
         layout = QVBoxLayout(self)
+        self.label = QLabel("Pré-visualização")
+        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(self.label)
 
-        layout.addWidget(QLabel("Escolha o modelo de layout:"))
-        self.combo_modelo = QComboBox()
-        self.combo_modelo.addItems(["Padrão 1 (vertical)", "Padrão 2 (horizontal)", "Padrão 3 (duas fotos)"])
-        layout.addWidget(self.combo_modelo)
-
-        layout.addWidget(QLabel("Posição da imagem no layout:"))
-        self.combo_posicao = QComboBox()
-        self.combo_posicao.addItems(["Centro", "Superior", "Inferior"])
-        layout.addWidget(self.combo_posicao)
-
-        self.check_borda = QCheckBox("Adicionar borda decorativa")
-        layout.addWidget(self.check_borda)
-
-        botoes = QHBoxLayout()
-        self.btn_salvar = QPushButton("Salvar")
-        self.btn_salvar.clicked.connect(self.salvar)
-
-        self.btn_reverter = QPushButton("Reverter")
-        self.btn_reverter.clicked.connect(self.reverter)
-
-        botoes.addWidget(self.btn_salvar)
-        botoes.addWidget(self.btn_reverter)
-        layout.addLayout(botoes)
-
-        self.carregar()
-
-    def carregar(self):
-        self.combo_modelo.setCurrentIndex(self.config.get("modelo", 0))
-        self.combo_posicao.setCurrentIndex(self.config.get("posicao", 0))
-        self.check_borda.setChecked(self.config.get("borda", False))
-
-    def salvar(self):
-        self.config["modelo"] = self.combo_modelo.currentIndex()
-        self.config["posicao"] = self.combo_posicao.currentIndex()
-        self.config["borda"] = self.check_borda.isChecked()
-        self.config_manager.salvar_config()
-
-    def reverter(self):
-        self.config.clear()
-        self.carregar()
+        imagem_resultado = aplicar_layout_em_imagem(caminho_foto, caminho_layout, posicao, borda)
+        if imagem_resultado:
+            qt_img = ImageQt.ImageQt(imagem_resultado)
+            pixmap = QPixmap.fromImage(QImage(qt_img))
+            self.label.setPixmap(pixmap.scaled(380, 380, Qt.AspectRatioMode.KeepAspectRatio))
+        else:
+            self.label.setText("Erro ao carregar imagem com layout.")

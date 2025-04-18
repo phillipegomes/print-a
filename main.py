@@ -1,3 +1,5 @@
+# main.py
+
 import traceback
 from PyQt6.QtWidgets import QApplication
 import sys
@@ -8,7 +10,7 @@ try:
     if __name__ == "__main__":
         app = QApplication(sys.argv)
         controller = AppController()
-        controller.start()
+        controller.show()  # Substitui .start() que não existe
         sys.exit(app.exec())
 
 except Exception as e:
