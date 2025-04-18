@@ -1,5 +1,5 @@
 # src/ui/main_window.py
-# BLOCO 7 - Integra configurações de WhatsApp na galeria (verifica se envio está ativado e usa número configurado)
+# BLOCO 8.2 - Integração do backup automático à galeria (após envio por WhatsApp)
 
 import os
 from PyQt6.QtWidgets import (
@@ -11,6 +11,7 @@ from PyQt6.QtCore import Qt
 from src.ui.main_actions import carregar_imagens, imprimir_foto, excluir_foto
 from src.modules.print_counter import PrintCounter
 from src.modules.whatsapp_sender import enviar_por_whatsapp
+from src.modules.backup_manager import salvar_em_backup
 
 class MainWindow(QWidget):
     def __init__(self, controller):
@@ -104,6 +105,7 @@ class MainWindow(QWidget):
         self.print_counter.registrar_impressao(caminho)
         novo_valor = self.print_counter.get_contagem(caminho)
         contador_label.setText(f"Impresso: {novo_valor}/{self.limite_copias}")
+        salvar_em_backup(self.config, caminho)
 
     def acao_excluir(self, caminho):
         confirm = QMessageBox.question(self, "Excluir", f"Deseja excluir a imagem?", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
@@ -124,3 +126,4 @@ class MainWindow(QWidget):
         enviado = enviar_por_whatsapp(numero, caminho)
         if enviado:
             QMessageBox.information(self, "Enviado", f"Imagem enviada para {numero}.")
+            salvar_em_backup(self.config, caminho)
