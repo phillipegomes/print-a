@@ -1,45 +1,51 @@
 # src/modules/file_watcher.py
-# BLOCO 14 – Monitoramento da pasta /Fotos e execução automática do pipeline
+# Módulo de monitoramento de nova imagem
 
 import os
 import time
 import threading
-from src.ui.main_actions import processar_imagem_completa
 
 class FileWatcher:
+    """
+    Monitora uma pasta e chama um callback quando uma nova imagem é adicionada.
+
+    Parâmetros:
+        - pasta_fotos (str): Caminho da pasta monitorada
+        - config (dict): Configurações do evento (pode conter modo_teste etc.)
+        - callback (func): Função a ser chamada quando nova imagem for detectada
+    """
     def __init__(self, pasta_fotos, config, callback=None):
         self.pasta_fotos = pasta_fotos
         self.config = config
-        self.callback = callback  # função opcional para chamar após processar (ex: atualizar galeria)
-        self._parar = False
-        self._arquivos_processados = set()
+        self.callback = callback
+        self.monitorando = False
+        self._arquivos_conhecidos = set(os.listdir(pasta_fotos)) if os.path.exists(pasta_fotos) else set()
 
     def iniciar(self):
-        thread = threading.Thread(target=self._verificar_loop, daemon=True)
+        if not os.path.exists(self.pasta_fotos):
+            print(f"[ERRO] Pasta de fotos não existe: {self.pasta_fotos}")
+            return
+        print(f"[MONITOR] Iniciando monitoramento da pasta: {self.pasta_fotos}")
+        self.monitorando = True
+        thread = threading.Thread(target=self._loop_monitoramento, daemon=True)
         thread.start()
 
     def parar(self):
-        self._parar = True
+        self.monitorando = False
 
-    def _verificar_loop(self):
-        print(f"[MONITOR] Iniciando monitoramento da pasta: {self.pasta_fotos}")
-        while not self._parar:
+    def _loop_monitoramento(self):
+        print(f"[MONITOR] Observando {self.pasta_fotos}...")
+        while self.monitorando:
             try:
-                arquivos = [f for f in os.listdir(self.pasta_fotos)
-                            if f.lower().endswith((".jpg", ".jpeg", ".png"))]
-
-                for nome in arquivos:
-                    caminho = os.path.join(self.pasta_fotos, nome)
-                    if caminho not in self._arquivos_processados:
-                        print(f"[MONITOR] Nova imagem detectada: {nome}")
-                        final = processar_imagem_completa(caminho, self.config)
-                        self._arquivos_processados.add(caminho)
-
-                        if final and self.callback:
-                            self.callback(final)  # exibir ou logar a imagem final
-
+                arquivos_atuais = set(os.listdir(self.pasta_fotos))
+                novos = arquivos_atuais - self._arquivos_conhecidos
+                for nome_arquivo in novos:
+                    caminho = os.path.join(self.pasta_fotos, nome_arquivo)
+                    if os.path.isfile(caminho) and nome_arquivo.lower().endswith((".jpg", ".jpeg", ".png")):
+                        print(f"[MONITOR] Nova imagem detectada: {nome_arquivo}")
+                        if self.callback:
+                            self.callback(caminho)
+                self._arquivos_conhecidos = arquivos_atuais
                 time.sleep(2)
-
             except Exception as e:
                 print(f"[MONITOR] Erro no monitoramento: {e}")
-                time.sleep(5)

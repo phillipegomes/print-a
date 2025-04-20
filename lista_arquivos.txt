@@ -1,0 +1,25 @@
+./config/__init__.py
+./eventos/__init__.py
+./main.py
+./src/ui/main_window.py
+./src/ui/compartilhamento_config.py
+./src/ui/layout_config.py
+./src/ui/event_styles.py
+./src/ui/ia_config.py
+./src/ui/__init__.py
+./src/ui/event_actions.py
+./src/ui/config_window.py
+./src/ui/main_actions.py
+./src/ui/event_window.py
+./src/ui/layout_config - cópia.py
+./src/ui/layout_preview.py
+./src/controller/__init__.py
+./src/controller/app_controller.py
+./src/modules/image_processor.py
+./src/modules/whatsapp_sender.py
+./src/modules/ia_real.py
+./src/modules/__init__.py
+./src/modules/print_counter.py
+./src/modules/backup_manager.py
+./src/modules/printer_manager.py
+./src/modules/file_watcher.py

@@ -1,0 +1,86 @@
+🚀 Iniciando Diagnóstico Universal Supremo...
+
+
+📂 Verificando estrutura básica do projeto...
+✅ Presente: src
+✅ Presente: tests
+✅ Presente: diagnostico
+❌ Ausente: README.md
+✅ Presente: .gitignore
+✅ Presente: main.py
+
+🖼️ Verificando imagens em eventos...
+📸 Evento 'evento teste 2' tem 9 imagem(ns).
+✅ settings.json encontrado em 'evento teste 2'
+📸 Evento 'Evento IA teste' tem 8 imagem(ns).
+✅ settings.json encontrado em 'Evento IA teste'
+📸 Evento 'evento real' tem 0 imagem(ns).
+✅ settings.json encontrado em 'evento real'
+❌ Evento 'eventos' sem pasta Fotos
+❌ Evento 'eventos' sem settings.json
+📸 Evento 'Chatgpt' tem 4 imagem(ns).
+✅ settings.json encontrado em 'Chatgpt'
+
+📦 Verificando código-fonte com análise leve...
+
+🧪 Rodando testes com PyTest...
+============================= test session starts ==============================
+platform darwin -- Python 3.13.3, pytest-8.3.5, pluggy-1.5.0
+rootdir: /Users/phillipe/Documents/PHOTO A/Software desenolvimento/Print A
+plugins: cov-6.1.1
+collected 2 items / 2 errors
+
+==================================== ERRORS ====================================
+_________________ ERROR collecting tests/test_abrir_evento.py __________________
+ImportError while importing test module '/Users/phillipe/Documents/PHOTO A/Software desenolvimento/Print A/tests/test_abrir_evento.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests/test_abrir_evento.py:2: in <module>
+    from src.modules.config_loader import carregar_config_evento
+E   ModuleNotFoundError: No module named 'src'
+_________________ ERROR collecting tests/test_criar_evento.py __________________
+ImportError while importing test module '/Users/phillipe/Documents/PHOTO A/Software desenolvimento/Print A/tests/test_criar_evento.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests/test_criar_evento.py:3: in <module>
+    from src.ui.event_actions import criar_evento
+E   ModuleNotFoundError: No module named 'src'
+=========================== short test summary info ============================
+ERROR tests/test_abrir_evento.py
+ERROR tests/test_criar_evento.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!
+============================== 2 errors in 0.07s ===============================
+
+✅ Testes executados com sucesso.
+
+🔎 Verificando imports e qualidade com pylint...
+
+📄 src/ui/main_window.py
+
+Your code has been rated at 1.58/10 (previous run: 1.58/10, +0.00)
+
+
+
+📄 src/ui/event_window.py
+
+Your code has been rated at 2.86/10 (previous run: 2.86/10, +0.00)
+
+
+
+📄 src/ui/main_actions.py
+
+Your code has been rated at 5.16/10 (previous run: 5.16/10, +0.00)
+
+
+
+📊 Relatório Final – Diagnóstico Universal Supremo
+- Total de erros registrados: 1
+🔻 [Estrutura] Item ausente: README.md
+   Causa: Projeto incompleto
+   Impacto: Pode causar erros ao rodar ou testar
+   Correção: Criar o item: README.md
+   Severidade: Média

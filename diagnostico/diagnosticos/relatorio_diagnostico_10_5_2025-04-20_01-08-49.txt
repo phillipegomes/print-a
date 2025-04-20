@@ -1,0 +1,156 @@
+🚀 Iniciando Diagnóstico Supremo 10.5...
+🔍 Verificando estrutura da pasta 'eventos/'...
+⚠️ Ignorando item que não é pasta: .DS_Store
+📸 Evento 'evento teste 2' tem 9 imagem(ns).
+✅ settings.json encontrado em 'evento teste 2'
+📸 Evento 'Evento IA teste' tem 8 imagem(ns).
+✅ settings.json encontrado em 'Evento IA teste'
+❌ Evento 'evento real' sem pasta 'Fotos'
+✅ settings.json encontrado em 'evento real'
+❌ Evento 'eventos' sem pasta 'Fotos'
+❌ Evento 'eventos' sem settings.json
+📸 Evento 'Chatgpt' tem 4 imagem(ns).
+✅ settings.json encontrado em 'Chatgpt'
+
+🔍 Verificando imports com pylint...
+📦 Rodando: pylint src/ui/main_window.py
+************* Module ui.main_window
+src/ui/main_window.py:28:0: C0301: Line too long (129/100) (line-too-long)
+src/ui/main_window.py:59:0: C0301: Line too long (106/100) (line-too-long)
+src/ui/main_window.py:68:0: C0301: Line too long (104/100) (line-too-long)
+src/ui/main_window.py:108:0: C0301: Line too long (133/100) (line-too-long)
+src/ui/main_window.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src/ui/main_window.py:1:0: E0611: No name 'QWidget' in module 'PyQt6.QtWidgets' (no-name-in-module)
+src/ui/main_window.py:1:0: E0611: No name 'QVBoxLayout' in module 'PyQt6.QtWidgets' (no-name-in-module)
+src/ui/main_window.py:1:0: E0611: No name 'QLabel' in module 'PyQt6.QtWidgets' (no-name-in-module)
+src/ui/main_window.py:1:0: E0611: No name 'QPushButton' in module 'PyQt6.QtWidgets' (no-name-in-module)
+src/ui/main_window.py:1:0: E0611: No name 'QScrollArea' in module 'PyQt6.QtWidgets' (no-name-in-module)
+src/ui/main_window.py:1:0: E0611: No name 'QGridLayout' in module 'PyQt6.QtWidgets' (no-name-in-module)
+src/ui/main_window.py:1:0: E0611: No name 'QHBoxLayout' in module 'PyQt6.QtWidgets' (no-name-in-module)
+src/ui/main_window.py:1:0: E0611: No name 'QMessageBox' in module 'PyQt6.QtWidgets' (no-name-in-module)
+src/ui/main_window.py:1:0: E0611: No name 'QSpinBox' in module 'PyQt6.QtWidgets' (no-name-in-module)
+src/ui/main_window.py:5:0: E0611: No name 'QPixmap' in module 'PyQt6.QtGui' (no-name-in-module)
+src/ui/main_window.py:6:0: E0611: No name 'Qt' in module 'PyQt6.QtCore' (no-name-in-module)
+src/ui/main_window.py:9:0: E0401: Unable to import 'src.ui.main_actions' (import-error)
+src/ui/main_window.py:10:0: E0401: Unable to import 'src.modules.print_counter' (import-error)
+src/ui/main_window.py:11:0: E0401: Unable to import 'src.modules.whatsapp_sender' (import-error)
+src/ui/main_window.py:12:0: E0401: Unable to import 'src.modules.backup_manager' (import-error)
+src/ui/main_window.py:13:0: E0401: Unable to import 'src.ui.main_styles' (import-error)
+src/ui/main_window.py:15:0: C0115: Missing class docstring (missing-class-docstring)
+src/ui/main_window.py:15:0: R0902: Too many instance attributes (21/7) (too-many-instance-attributes)
+src/ui/main_window.py:101:4: C0116: Missing function or method docstring (missing-function-docstring)
+src/ui/main_window.py:15:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+src/ui/main_window.py:7:0: C0411: standard import "os" should be placed before third party imports "PyQt6.QtWidgets.QWidget", "PyQt6.QtGui.QPixmap", "PyQt6.QtCore.Qt" (wrong-import-order)
+src/ui/main_window.py:1:0: W0611: Unused QMessageBox imported from PyQt6.QtWidgets (unused-import)
+src/ui/main_window.py:1:0: W0611: Unused QSpinBox imported from PyQt6.QtWidgets (unused-import)
+src/ui/main_window.py:9:0: W0611: Unused imprimir_foto imported from src.ui.main_actions (unused-import)
+src/ui/main_window.py:9:0: W0611: Unused excluir_foto imported from src.ui.main_actions (unused-import)
+src/ui/main_window.py:11:0: W0611: Unused enviar_por_whatsapp imported from src.modules.whatsapp_sender (unused-import)
+src/ui/main_window.py:12:0: W0611: Unused salvar_em_backup imported from src.modules.backup_manager (unused-import)
+
+------------------------------------------------------------------
+Your code has been rated at 0.00/10 (previous run: 1.78/10, -1.78)
+📦 Rodando: pylint src/ui/event_window.py
+************* Module ui.event_window
+src/ui/event_window.py:38:0: C0301: Line too long (103/100) (line-too-long)
+src/ui/event_window.py:61:0: C0301: Line too long (108/100) (line-too-long)
+src/ui/event_window.py:86:0: C0301: Line too long (115/100) (line-too-long)
+src/ui/event_window.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src/ui/event_window.py:1:0: E0611: No name 'QWidget' in module 'PyQt6.QtWidgets' (no-name-in-module)
+src/ui/event_window.py:1:0: E0611: No name 'QVBoxLayout' in module 'PyQt6.QtWidgets' (no-name-in-module)
+src/ui/event_window.py:1:0: E0611: No name 'QHBoxLayout' in module 'PyQt6.QtWidgets' (no-name-in-module)
+src/ui/event_window.py:1:0: E0611: No name 'QLineEdit' in module 'PyQt6.QtWidgets' (no-name-in-module)
+src/ui/event_window.py:1:0: E0611: No name 'QPushButton' in module 'PyQt6.QtWidgets' (no-name-in-module)
+src/ui/event_window.py:1:0: E0611: No name 'QTableWidget' in module 'PyQt6.QtWidgets' (no-name-in-module)
+src/ui/event_window.py:1:0: E0611: No name 'QTableWidgetItem' in module 'PyQt6.QtWidgets' (no-name-in-module)
+src/ui/event_window.py:1:0: E0611: No name 'QHeaderView' in module 'PyQt6.QtWidgets' (no-name-in-module)
+src/ui/event_window.py:1:0: E0611: No name 'QMenu' in module 'PyQt6.QtWidgets' (no-name-in-module)
+src/ui/event_window.py:1:0: E0611: No name 'QMessageBox' in module 'PyQt6.QtWidgets' (no-name-in-module)
+src/ui/event_window.py:5:0: E0611: No name 'Qt' in module 'PyQt6.QtCore' (no-name-in-module)
+src/ui/event_window.py:6:0: E0401: Unable to import 'src.ui.styles.event_styles' (import-error)
+src/ui/event_window.py:7:0: E0401: Unable to import 'src.ui.event_actions' (import-error)
+src/ui/event_window.py:14:0: C0115: Missing class docstring (missing-class-docstring)
+src/ui/event_window.py:14:0: R0902: Too many instance attributes (10/7) (too-many-instance-attributes)
+src/ui/event_window.py:68:4: C0116: Missing function or method docstring (missing-function-docstring)
+src/ui/event_window.py:72:4: C0116: Missing function or method docstring (missing-function-docstring)
+src/ui/event_window.py:78:4: C0116: Missing function or method docstring (missing-function-docstring)
+src/ui/event_window.py:82:4: C0116: Missing function or method docstring (missing-function-docstring)
+src/ui/event_window.py:89:4: C0116: Missing function or method docstring (missing-function-docstring)
+src/ui/event_window.py:93:4: C0116: Missing function or method docstring (missing-function-docstring)
+src/ui/event_window.py:98:4: C0116: Missing function or method docstring (missing-function-docstring)
+src/ui/event_window.py:103:4: C0116: Missing function or method docstring (missing-function-docstring)
+src/ui/event_window.py:108:4: C0116: Missing function or method docstring (missing-function-docstring)
+src/ui/event_window.py:123:8: W0612: Unused variable 'btn_nao' (unused-variable)
+src/ui/event_window.py:133:4: C0116: Missing function or method docstring (missing-function-docstring)
+src/ui/event_window.py:137:4: C0116: Missing function or method docstring (missing-function-docstring)
+src/ui/event_window.py:148:4: C0116: Missing function or method docstring (missing-function-docstring)
+src/ui/event_window.py:12:0: C0411: standard import "os" should be placed before third party imports "PyQt6.QtWidgets.QWidget", "PyQt6.QtCore.Qt" and first party imports "src.ui.styles.event_styles.EVENT_STYLE", "src.ui.event_actions.carregar_eventos"  (wrong-import-order)
+
+------------------------------------------------------------------
+Your code has been rated at 2.86/10 (previous run: 2.86/10, +0.00)
+📦 Rodando: pylint src/ui/main_actions.py
+************* Module ui.main_actions
+src/ui/main_actions.py:21:0: C0303: Trailing whitespace (trailing-whitespace)
+src/ui/main_actions.py:82:0: C0301: Line too long (137/100) (line-too-long)
+src/ui/main_actions.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src/ui/main_actions.py:6:0: E0611: No name 'QMessageBox' in module 'PyQt6.QtWidgets' (no-name-in-module)
+src/ui/main_actions.py:7:0: E0401: Unable to import 'src.modules.image_processor' (import-error)
+src/ui/main_actions.py:8:0: E0401: Unable to import 'src.modules.ia_real' (import-error)
+src/ui/main_actions.py:9:0: E0401: Unable to import 'src.ui.layout_preview' (import-error)
+src/ui/main_actions.py:36:0: C0116: Missing function or method docstring (missing-function-docstring)
+src/ui/main_actions.py:40:0: C0116: Missing function or method docstring (missing-function-docstring)
+src/ui/main_actions.py:45:11: W0718: Catching too general exception Exception (broad-exception-caught)
+src/ui/main_actions.py:50:0: C0116: Missing function or method docstring (missing-function-docstring)
+src/ui/main_actions.py:96:11: W0718: Catching too general exception Exception (broad-exception-caught)
+src/ui/main_actions.py:67:57: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+src/ui/main_actions.py:84:65: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+
+------------------------------------------------------------------
+Your code has been rated at 5.16/10 (previous run: 4.82/10, +0.34)
+📦 Rodando: pylint src/modules/config_manager.py
+************* Module modules.config_manager
+src/modules/config_manager.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src/modules/config_manager.py:24:19: W0718: Catching too general exception Exception (broad-exception-caught)
+src/modules/config_manager.py:28:18: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+src/modules/config_manager.py:46:15: W0718: Catching too general exception Exception (broad-exception-caught)
+src/modules/config_manager.py:7:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+
+------------------------------------------------------------------
+Your code has been rated at 8.15/10 (previous run: 8.15/10, +0.00)
+
+🔍 Verificando assets obrigatórios...
+❌ Asset ausente: layout1.png
+❌ Asset ausente: layout2.png
+❌ Asset ausente: layout3.png
+
+🔍 Verificando métodos essenciais em main_window.py...
+✅ Método presente: carregar_galeria
+✅ Método presente: carregar_imagens
+❌ Método ausente: acao_imprimir
+❌ Método ausente: acao_excluir
+
+🧪 Executando testes PyTest...
+============================= test session starts ==============================
+platform darwin -- Python 3.13.3, pytest-8.3.5, pluggy-1.5.0
+rootdir: /Users/phillipe/Documents/PHOTO A/Software desenolvimento/Print A
+plugins: cov-6.1.1
+collected 4 items
+
+diagnostico/tests/test_diagnostico_supremo.py .                          [ 25%]
+tests/test_abrir_evento.py .                                             [ 50%]
+tests/test_criar_evento.py F                                             [ 75%]
+tests/test_logs.py .                                                     [100%]
+
+=================================== FAILURES ===================================
+______________________________ test_criar_evento _______________________________
+
+    def test_criar_evento():
+        callback = lambda: None
+>       criar_evento(callback, nome_evento=NOME)
+E       TypeError: criar_evento() got an unexpected keyword argument 'nome_evento'
+
+tests/test_criar_evento.py:14: TypeError
+=========================== short test summary info ============================
+FAILED tests/test_criar_evento.py::test_criar_evento - TypeError: criar_event...
+========================= 1 failed, 3 passed in 0.07s ==========================
+❌ Alguns testes falharam.

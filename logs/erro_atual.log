@@ -1,7 +1,0 @@
-ERRO EXECUÇÃO PrintA:
-
-Traceback (most recent call last):
-  File "/Users/phillipe/Documents/PHOTO A/Software desenolvimento/Print A/main.py", line 11, in <module>
-    controller.start()
-    ^^^^^^^^^^^^^^^^
-AttributeError: 'AppController' object has no attribute 'start'

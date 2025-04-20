@@ -1,49 +1,44 @@
 # src/ui/layout_preview.py
-# BLOCO 11.2 – Preview do Layout com aplicação de moldura estilo photobooth
+# ✅ BLOCO 6.2 – Aplicar layout na imagem
 
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
-from PyQt6.QtGui import QPixmap, QImage
-from PyQt6.QtCore import Qt
-from PIL import Image, ImageQt, ImageOps
-import os
+from PIL import Image
 
-def aplicar_layout_em_imagem(caminho_foto, caminho_layout, posicao="Centro", borda=False):
+def aplicar_layout_em_imagem(imagem_path, layout_path, posicao="Centro", borda=False):
     """
-    Aplica um layout PNG transparente sobre uma imagem base.
+    Aplica o layout na imagem original, centralizando conforme a posição e opção de borda.
+    Retorna uma nova imagem com o layout aplicado.
     """
     try:
-        base = Image.open(caminho_foto).convert("RGBA")
-        layout = Image.open(caminho_layout).convert("RGBA")
+        imagem = Image.open(imagem_path).convert("RGBA")
+        layout = Image.open(layout_path).convert("RGBA")
 
-        if borda:
-            base = ImageOps.expand(base, border=20, fill="white")
-            layout = layout.resize(base.size)
+        largura, altura = layout.size
+        nova_imagem = layout.copy()
 
+        imagem = imagem.resize((int(largura * 0.65), int(altura * 0.65)))
+
+        # Calcula posição
+        if posicao == "Centro":
+            x = (largura - imagem.width) // 2
+            y = (altura - imagem.height) // 2
+        elif posicao == "Superior":
+            x = (largura - imagem.width) // 2
+            y = int(altura * 0.1)
+        elif posicao == "Inferior":
+            x = (largura - imagem.width) // 2
+            y = altura - imagem.height - int(altura * 0.1)
         else:
-            layout = layout.resize(base.size)
+            x, y = 0, 0
 
-        combinada = Image.alpha_composite(base, layout)
-        return combinada
+        nova_imagem.paste(imagem, (x, y), imagem if imagem.mode == 'RGBA' else None)
+
+        # Adiciona borda opcional
+        if borda:
+            from PIL import ImageOps
+            nova_imagem = ImageOps.expand(nova_imagem, border=30, fill="white")
+
+        return nova_imagem
 
     except Exception as e:
-        print(f"[LAYOUT] Erro ao aplicar layout: {e}")
+        print(f"[ERRO] ao aplicar layout: {e}")
         return None
-
-class LayoutPreview(QWidget):
-    def __init__(self, caminho_foto, caminho_layout, posicao="Centro", borda=False):
-        super().__init__()
-        self.setWindowTitle("Preview do Layout")
-        self.setMinimumSize(400, 400)
-
-        layout = QVBoxLayout(self)
-        self.label = QLabel("Pré-visualização")
-        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(self.label)
-
-        imagem_resultado = aplicar_layout_em_imagem(caminho_foto, caminho_layout, posicao, borda)
-        if imagem_resultado:
-            qt_img = ImageQt.ImageQt(imagem_resultado)
-            pixmap = QPixmap.fromImage(QImage(qt_img))
-            self.label.setPixmap(pixmap.scaled(380, 380, Qt.AspectRatioMode.KeepAspectRatio))
-        else:
-            self.label.setText("Erro ao carregar imagem com layout.")

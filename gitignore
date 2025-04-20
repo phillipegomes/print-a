@@ -1,0 +1,15 @@
+# Arquivos Python compilados
+__pycache__/
+*.pyc
+
+# Arquivos de log
+logs/
+*.log
+
+# Arquivos temporários ou de backup
+* - cópia.py
+*.bak
+*.tmp
+
+# Pastas específicas
+github/
