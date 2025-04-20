@@ -1,0 +1,24 @@
+{
+    "data_criacao": "2025-04-19 19:39:10",
+    "layout": {
+        "modelo": 0,
+        "posicao": 0,
+        "borda": false
+    },
+    "impressao": {
+        "ativa": true,
+        "copias": 1
+    },
+    "ia": {
+        "ativa": false,
+        "estilo": "Cartoon",
+        "modo": 0,
+        "api_key": ""
+    },
+    "compartilhamento": {
+        "whatsapp_ativo": false,
+        "whatsapp_numero": "",
+        "smugmug_ativo": false,
+        "pasta_backup_extra": ""
+    }
+}

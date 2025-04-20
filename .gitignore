@@ -1,17 +1,25 @@
-# Arquivos e pastas temporárias
+# ✅ Arquivos temporários e Python
 __pycache__/
 *.pyc
 *.pyo
 *.log
 *.save
+*.txt
 *.zip
 *.sh
-*.txt
-*.DS_Store
+
+# ✅ Arquivos de mídia pesados
+*.jpg
+*.jpeg
+*.png
+*.gif
 *.mp4
 *.mov
+*.psd
+*.heic
+*.DS_Store
 
-# Pastas que não devem ir pro repositório
+# ✅ Pastas que devem ser ignoradas
 eventos_backup/
 logs/
 diagnostico/
@@ -22,7 +30,6 @@ venv/
 .idea/
 .vscode/
 
-# Pastas de eventos grandes
+# ✅ Ignora tudo dos eventos, menos settings.json
 eventos/
 !eventos/**/config/settings.json
-
