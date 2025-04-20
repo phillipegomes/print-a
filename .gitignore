@@ -1,0 +1,28 @@
+# Arquivos e pastas temporárias
+__pycache__/
+*.pyc
+*.pyo
+*.log
+*.save
+*.zip
+*.sh
+*.txt
+*.DS_Store
+*.mp4
+*.mov
+
+# Pastas que não devem ir pro repositório
+eventos_backup/
+logs/
+diagnostico/
+tests/
+assets/videos/
+github/
+venv/
+.idea/
+.vscode/
+
+# Pastas de eventos grandes
+eventos/
+!eventos/**/config/settings.json
+

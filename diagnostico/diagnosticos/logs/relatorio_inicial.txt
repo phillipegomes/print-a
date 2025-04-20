@@ -1,6 +1,0 @@
-# relatorio_inicial.txt
-[2025-04-19] Diagnóstico iniciado.
-🔍 Verificando estrutura do projeto...
-✅ Pasta presente: src
-✅ Pasta presente: tests
-✅ Pasta presente: diagnosticos
