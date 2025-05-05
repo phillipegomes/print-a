@@ -1,116 +1,51 @@
+
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QTabWidget, QLabel, QHBoxLayout,
-    QPushButton, QCheckBox, QMessageBox, QApplication
+    QWidget, QTabWidget, QVBoxLayout
 )
-from PyQt6.QtCore import Qt
-import os
-import json
-import webbrowser
-import sys
+
+from src.ui.layout_editor import LayoutEditor
+from src.ui.impressao_config import ImpressaoConfigWidget
+from src.ui.ia_config import IAConfigWidget
+from src.ui.compartilhamento_config import CompartilhamentoConfigWidget
 
 
 class ConfigWindow(QWidget):
-    def __init__(self, controller=None):
+    def __init__(self, controller, config_manager):
         super().__init__()
         self.controller = controller
-        self.setWindowTitle("Print A – Configurações")
-        self.setMinimumSize(800, 600)
+        self.config_manager = config_manager
 
-        layout = QVBoxLayout(self)
+        self.setWindowTitle("⚙️ Configurações")
+        self.setMinimumSize(900, 600)
+
         self.tabs = QTabWidget()
+        self.setLayout(QVBoxLayout())
+        self.layout().addWidget(self.tabs)
 
-        # Verifica se há config_manager no controller
-        config_manager = getattr(controller, 'config_manager', None)
+        # 🎨 Layout (Editor Completo)
+        self.layout_editor = LayoutEditor()
+        self.tabs.addTab(self.layout_editor, "🎨 Layout")
 
-        # Abas reais
-        self.tabs.addTab(self.init_aba_geral(), "⚙️ Geral")
+        # 🖨️ Impressão
+        self.impressao_config = ImpressaoConfigWidget(controller)
+        self.tabs.addTab(self.impressao_config, "🖨️ Impressão")
 
-        # Abas placeholder (em construção)
-        self.tabs.addTab(self.criar_aba_placeholder("🖨️ Impressão"), "Impressão")
-        self.tabs.addTab(self.criar_aba_placeholder("🎨 Layout"), "Layout")
-        self.tabs.addTab(self.criar_aba_placeholder("🤖 IA"), "IA")
-        self.tabs.addTab(self.criar_aba_placeholder("📲 Compartilhamento"), "Compartilhamento")
-        self.tabs.addTab(self.criar_aba_placeholder("☁️ SmugMug"), "SmugMug")
-        self.tabs.addTab(self.criar_aba_placeholder("📊 Relatórios"), "Relatórios")
+        # 🤖 Inteligência Artificial
+        self.ia_config = IAConfigWidget(controller)
+        self.tabs.addTab(self.ia_config, "🤖 IA")
 
-        layout.addWidget(self.tabs)
+        # 📲 Compartilhamento
+        self.compartilhamento_config = CompartilhamentoConfigWidget(controller)
+        self.tabs.addTab(self.compartilhamento_config, "📲 Compartilhamento")
 
-    def criar_aba_placeholder(self, titulo):
-        aba = QWidget()
-        layout = QVBoxLayout(aba)
-        label = QLabel(f"{titulo} – conteúdo em construção")
-        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        label.setStyleSheet("font-size: 18px; padding: 20px;")
+        # 📋 Relatório
+        from src.ui.relatorio_config import RelatorioConfigWidget
+        self.relatorio_config = RelatorioConfigWidget(controller)
+        self.tabs.addTab(self.relatorio_config, "📋 Relatório")
 
-        botoes = QHBoxLayout()
-        btn_salvar = QPushButton("💾 Salvar")
-        btn_reset = QPushButton("🔄 Reverter para padrão")
-        for btn in [btn_salvar, btn_reset]:
-            btn.setFixedHeight(36)
-            btn.setCursor(Qt.CursorShape.PointingHandCursor)
-            botoes.addWidget(btn)
+        # ⚙️ Geral
+        from src.ui.geral_config import GeralConfigWidget
+        self.geral_config = GeralConfigWidget(controller)
+        self.tabs.addTab(self.geral_config, "⚙️ Geral")
 
-        layout.addWidget(label)
-        layout.addLayout(botoes)
-        layout.addStretch()
-        return aba
-
-    def init_aba_geral(self):
-        aba = QWidget()
-        layout = QVBoxLayout(aba)
-
-        # Label e botão de update
-        label = QLabel("🔄 Verificar atualizações disponíveis:")
-        btn_update = QPushButton("Verificar atualizações no GitHub")
-        btn_update.clicked.connect(lambda: webbrowser.open("https://github.com/phillipegomes/print-a"))
-
-        # Checkboxes
-        self.check_backup = QCheckBox("Fazer backup automático antes de excluir ou renomear eventos")
-        self.check_backup.setChecked(True)
-
-        self.check_limpeza = QCheckBox("Limpar automaticamente eventos vazios após 24h")
-        self.check_limpeza.setChecked(True)
-
-        # Botões
-        btn_salvar = QPushButton("💾 Salvar")
-        btn_reverter = QPushButton("🔄 Reverter para padrão")
-        btn_salvar.clicked.connect(self.salvar_geral)
-        btn_reverter.clicked.connect(self.reverter_padrao)
-
-        botoes = QHBoxLayout()
-        botoes.addWidget(btn_salvar)
-        botoes.addWidget(btn_reverter)
-
-        # Monta o layout da aba
-        layout.addWidget(label)
-        layout.addWidget(btn_update)
-        layout.addSpacing(20)
-        layout.addWidget(self.check_backup)
-        layout.addWidget(self.check_limpeza)
-        layout.addSpacing(30)
-        layout.addLayout(botoes)
-        layout.addStretch()
-
-        return aba
-
-    def salvar_geral(self):
-        config = {
-            "backup_automatico": self.check_backup.isChecked(),
-            "limpeza_automatica": self.check_limpeza.isChecked()
-        }
-        os.makedirs("config", exist_ok=True)
-        with open("config/geral.json", "w") as f:
-            json.dump(config, f, indent=4)
-        QMessageBox.information(self, "Configurações", "Configurações salvas com sucesso!")
-
-    def reverter_padrao(self):
-        self.check_backup.setChecked(True)
-        self.check_limpeza.setChecked(True)
-        QMessageBox.information(self, "Configurações", "Valores padrão restaurados.")
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = ConfigWindow()
-    window.show()
-    sys.exit(app.exec())
+        self.compartilhamento_config = CompartilhamentoConfigWidget(controller)

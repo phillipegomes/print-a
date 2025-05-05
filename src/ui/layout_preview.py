@@ -1,44 +1,50 @@
-# src/ui/layout_preview.py
-# ✅ BLOCO 6.2 – Aplicar layout na imagem
+# ✅ src/ui/layout_preview.py
+import os
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtCore import Qt
 
-from PIL import Image
+from src.modules.layout_renderer import LayoutRenderer
 
-def aplicar_layout_em_imagem(imagem_path, layout_path, posicao="Centro", borda=False):
-    """
-    Aplica o layout na imagem original, centralizando conforme a posição e opção de borda.
-    Retorna uma nova imagem com o layout aplicado.
-    """
-    try:
-        imagem = Image.open(imagem_path).convert("RGBA")
-        layout = Image.open(layout_path).convert("RGBA")
+class LayoutPreviewWidget(QWidget):
+    def __init__(self, controller):
+        super().__init__()
+        self.controller = controller
+        self.config = controller.config_manager.config
 
-        largura, altura = layout.size
-        nova_imagem = layout.copy()
+        self.setLayout(self._criar_layout())
+        self._renderizar_preview()
 
-        imagem = imagem.resize((int(largura * 0.65), int(altura * 0.65)))
+    def _criar_layout(self):
+        layout = QVBoxLayout()
 
-        # Calcula posição
-        if posicao == "Centro":
-            x = (largura - imagem.width) // 2
-            y = (altura - imagem.height) // 2
-        elif posicao == "Superior":
-            x = (largura - imagem.width) // 2
-            y = int(altura * 0.1)
-        elif posicao == "Inferior":
-            x = (largura - imagem.width) // 2
-            y = altura - imagem.height - int(altura * 0.1)
-        else:
-            x, y = 0, 0
+        self.label_preview = QLabel("Prévia do layout")
+        self.label_preview.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_preview.setStyleSheet("border: 2px dashed gray; padding: 10px")
 
-        nova_imagem.paste(imagem, (x, y), imagem if imagem.mode == 'RGBA' else None)
+        self.btn_atualizar = QPushButton("🔄 Atualizar Prévia")
+        self.btn_atualizar.clicked.connect(self._renderizar_preview)
 
-        # Adiciona borda opcional
-        if borda:
-            from PIL import ImageOps
-            nova_imagem = ImageOps.expand(nova_imagem, border=30, fill="white")
+        layout.addWidget(self.label_preview)
+        layout.addWidget(self.btn_atualizar)
+        return layout
 
-        return nova_imagem
+    def _renderizar_preview(self):
+        elementos = self.controller.canvas.get_elementos()
+        renderer = LayoutRenderer(self.config)
+        caminho_imagem = renderer.renderizar(elementos, nome_base="preview_temp")
 
-    except Exception as e:
-        print(f"[ERRO] ao aplicar layout: {e}")
-        return None
+        if os.path.exists(caminho_imagem):
+            pixmap = QPixmap(caminho_imagem)
+            self.label_preview.setPixmap(pixmap.scaled(
+                600, 400,
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation
+            ))
+
+# ✅ Exporta função para uso no processamento real da imagem capturada
+
+def aplicar_layout_em_imagem(caminho_imagem, config):
+    renderer = LayoutRenderer(config)
+    elementos = config.get("layout", [])
+    return renderer.renderizar(elementos, caminho_base=caminho_imagem)

@@ -1,75 +1,73 @@
 # src/ui/layout_config.py
-# BLOCO 11.3 – Botão de Preview na aba Layout
 
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QHBoxLayout, QPushButton, QComboBox, QCheckBox
+    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QComboBox, QGroupBox
 )
-from src.ui.layout_preview import LayoutPreview
-import os
+from PyQt6.QtCore import Qt
 
-class LayoutConfig(QWidget):
-    def __init__(self, config_manager):
+from src.modules.canvas_widget import CanvasWidget
+from src.modules.layout_saver import LayoutSaver
+from src.modules.layout_templates import aplicar_template
+
+
+class LayoutConfigWidget(QWidget):
+    def __init__(self, controller):
         super().__init__()
-        self.config_manager = config_manager
-        self.config = self.config_manager.config.setdefault("layout", {})
+        self.controller = controller
+        self.saver = LayoutSaver(controller)
+        self.setLayout(self._criar_layout_principal())
 
-        layout = QVBoxLayout(self)
+    def _criar_layout_principal(self):
+        layout = QHBoxLayout()
 
-        layout.addWidget(QLabel("Escolha o modelo de layout:"))
-        self.combo_modelo = QComboBox()
-        self.combo_modelo.addItems(["Padrão 1 (vertical)", "Padrão 2 (horizontal)", "Padrão 3 (duas fotos)"])
-        layout.addWidget(self.combo_modelo)
+        # 🎨 Barra lateral esquerda
+        self.sidebar = QVBoxLayout()
+        self._adicionar_botoes_elementos()
+        self._adicionar_config_layout()
+        layout.addLayout(self.sidebar, 1)
 
-        layout.addWidget(QLabel("Posição da imagem no layout:"))
-        self.combo_posicao = QComboBox()
-        self.combo_posicao.addItems(["Centro", "Superior", "Inferior"])
-        layout.addWidget(self.combo_posicao)
+        # 🖼️ Canvas central
+        self.canvas = CanvasWidget(self.controller)
+        layout.addWidget(self.canvas, 4)
 
-        self.check_borda = QCheckBox("Adicionar borda decorativa")
-        layout.addWidget(self.check_borda)
+        return layout
 
-        botoes = QHBoxLayout()
-        self.btn_salvar = QPushButton("Salvar")
-        self.btn_salvar.clicked.connect(self.salvar)
+    def _adicionar_botoes_elementos(self):
+        botoes = [
+            ("Adicionar Foto", lambda: self.canvas.adicionar_elemento("foto")),
+            ("Adicionar Texto", lambda: self.canvas.adicionar_elemento("texto")),
+            ("Adicionar QR", lambda: self.canvas.adicionar_elemento("qr")),
+            ("Adicionar Moldura", lambda: self.canvas.adicionar_elemento("moldura")),
+            ("Adicionar Logo", lambda: self.canvas.adicionar_elemento("logo")),
+            ("Adicionar Forma", lambda: self.canvas.adicionar_elemento("forma")),
+            ("Aplicar Template", self._aplicar_template)
+        ]
+        for nome, func in botoes:
+            botao = QPushButton(nome)
+            botao.clicked.connect(func)
+            self.sidebar.addWidget(botao)
 
-        self.btn_reverter = QPushButton("Reverter")
-        self.btn_reverter.clicked.connect(self.reverter)
+    def _adicionar_config_layout(self):
+        grupo = QGroupBox("Configuração do Layout")
+        config_layout = QVBoxLayout()
 
-        self.btn_preview = QPushButton("Visualizar Layout")
-        self.btn_preview.clicked.connect(self.abrir_preview)
+        self.combo_dpi = QComboBox()
+        self.combo_dpi.addItems(["300 DPI", "600 DPI"])
+        config_layout.addWidget(QLabel("Resolução:"))
+        config_layout.addWidget(self.combo_dpi)
 
-        botoes.addWidget(self.btn_salvar)
-        botoes.addWidget(self.btn_reverter)
-        botoes.addWidget(self.btn_preview)
-        layout.addLayout(botoes)
+        self.combo_tamanho = QComboBox()
+        self.combo_tamanho.addItems(["4x6", "5x7", "6x8"])
+        config_layout.addWidget(QLabel("Tamanho:"))
+        config_layout.addWidget(self.combo_tamanho)
 
-        self.carregar()
+        self.combo_orientacao = QComboBox()
+        self.combo_orientacao.addItems(["Horizontal", "Vertical"])
+        config_layout.addWidget(QLabel("Orientação:"))
+        config_layout.addWidget(self.combo_orientacao)
 
-    def carregar(self):
-        self.combo_modelo.setCurrentIndex(self.config.get("modelo", 0))
-        self.combo_posicao.setCurrentIndex(self.config.get("posicao", 0))
-        self.check_borda.setChecked(self.config.get("borda", False))
+        grupo.setLayout(config_layout)
+        self.sidebar.addWidget(grupo)
 
-    def salvar(self):
-        self.config["modelo"] = self.combo_modelo.currentIndex()
-        self.config["posicao"] = self.combo_posicao.currentIndex()
-        self.config["borda"] = self.check_borda.isChecked()
-        self.config_manager.salvar_config()
-
-    def reverter(self):
-        self.config.clear()
-        self.carregar()
-
-    def abrir_preview(self):
-        caminho_foto = "assets/teste.jpg"
-        modelo = self.combo_modelo.currentIndex()
-        layout_file = f"assets/layouts/layout{modelo + 1}.png"
-        posicao = self.combo_posicao.currentText()
-        borda = self.check_borda.isChecked()
-
-        if not os.path.exists(caminho_foto) or not os.path.exists(layout_file):
-            print("[Preview] Arquivo de teste ou layout não encontrado.")
-            return
-
-        self.preview_window = LayoutPreview(caminho_foto, layout_file, posicao, borda)
-        self.preview_window.show()
+    def _aplicar_template(self):
+        aplicar_template(self.canvas, self.controller.config_manager)

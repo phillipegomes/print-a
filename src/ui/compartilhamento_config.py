@@ -1,71 +1,28 @@
 # src/ui/compartilhamento_config.py
-# BLOCO 6.1 - Aba de Compartilhamento com checkboxes para envio de imagem
+# SUPREMO – Aba de Compartilhamento nas Configurações
 
-from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QCheckBox, QLineEdit, QLabel,
-    QPushButton, QHBoxLayout, QMessageBox
-)
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QCheckBox
 
-# 🧠 Explicação:
-# Esta interface permite ativar ou desativar opções de compartilhamento:
-# - WhatsApp
-# - SmugMug (reserva para futuro)
-# - Pasta de backup
-# O estado é salvo no settings.json do evento
-
-class CompartilhamentoConfig(QWidget):
-    def __init__(self, config_manager):
+class CompartilhamentoConfigWidget(QWidget):
+    """
+    Aba de configurações relacionadas ao compartilhamento de fotos,
+    incluindo modo offline e futuras integrações com redes sociais.
+    """
+    def __init__(self, controller):
         super().__init__()
-        self.config_manager = config_manager
-        self.config = self.config_manager.config.setdefault("compartilhamento", {})
 
-        layout = QVBoxLayout(self)
+        # ✅ SUPREMO FIX – Acesso correto às configurações
+        self.controller = controller
+        self.config_manager = controller.config_manager
+        self.config = self.config_manager.config  # Garante que get() funciona
 
-        # WhatsApp
-        self.checkbox_whatsapp = QCheckBox("Ativar envio por WhatsApp")
-        self.input_numero = QLineEdit()
-        self.input_numero.setPlaceholderText("Número (ex: +5511999999999)")
+        layout = QVBoxLayout()
+        self.setLayout(layout)
 
-        layout.addWidget(self.checkbox_whatsapp)
-        layout.addWidget(self.input_numero)
+        # 📲 Checkbox para modo offline (ex: eventos sem internet)
+        self.checkbox_offline = QCheckBox("Ativar modo offline")
+        self.checkbox_offline.setChecked(self.config.get("compartilhamento_offline", False))
+        layout.addWidget(QLabel("Modo de Compartilhamento"))
+        layout.addWidget(self.checkbox_offline)
 
-        # Backup extra
-        self.checkbox_backup = QCheckBox("Salvar em pasta de backup adicional")
-        self.input_backup = QLineEdit()
-        self.input_backup.setPlaceholderText("Caminho completo da pasta")
-
-        layout.addWidget(self.checkbox_backup)
-        layout.addWidget(self.input_backup)
-
-        # Botões
-        botoes = QHBoxLayout()
-        self.btn_salvar = QPushButton("Salvar")
-        self.btn_padrao = QPushButton("Reverter para padrão")
-
-        self.btn_salvar.clicked.connect(self.salvar)
-        self.btn_padrao.clicked.connect(self.reverter)
-
-        botoes.addWidget(self.btn_salvar)
-        botoes.addWidget(self.btn_padrao)
-        layout.addLayout(botoes)
-
-        self.carregar()
-
-    def carregar(self):
-        self.checkbox_whatsapp.setChecked(self.config.get("whatsapp_ativo", False))
-        self.input_numero.setText(self.config.get("whatsapp_numero", ""))
-        self.checkbox_backup.setChecked(self.config.get("backup_ativo", False))
-        self.input_backup.setText(self.config.get("backup_pasta", ""))
-
-    def salvar(self):
-        self.config["whatsapp_ativo"] = self.checkbox_whatsapp.isChecked()
-        self.config["whatsapp_numero"] = self.input_numero.text()
-        self.config["backup_ativo"] = self.checkbox_backup.isChecked()
-        self.config["backup_pasta"] = self.input_backup.text()
-        self.config_manager.salvar_config()
-        QMessageBox.information(self, "Salvo", "Configurações de compartilhamento salvas.")
-
-    def reverter(self):
-        self.config.clear()
-        self.carregar()
-        QMessageBox.information(self, "Revertido", "Valores revertidos para padrão.")
+        # Você pode adicionar mais campos aqui conforme a evolução da aba

@@ -1,0 +1,40 @@
+[
+  {
+    "id": "photo_1",
+    "tipo": "foto",
+    "x": 100,
+    "y": 150,
+    "largura": 600,
+    "altura": 400,
+    "caminho": ""
+  },
+  {
+    "id": "text_1",
+    "tipo": "texto",
+    "x": 150,
+    "y": 580,
+    "largura": 400,
+    "altura": 100,
+    "texto": "Camila & Rodrigo",
+    "tamanho": 0.08,
+    "cor": "#D4AF37"
+  },
+  {
+    "id": "qr_1",
+    "tipo": "qr",
+    "x": 700,
+    "y": 150,
+    "largura": 180,
+    "altura": 180,
+    "caminho": "https://photoa.com.br/casamento"
+  },
+  {
+    "id": "moldura_1",
+    "tipo": "moldura",
+    "x": 90,
+    "y": 140,
+    "largura": 620,
+    "altura": 420,
+    "caminho": "assets/molduras/dourada.png"
+  }
+]

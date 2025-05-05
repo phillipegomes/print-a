@@ -1,21 +1,15 @@
-import os
-import json
-from datetime import datetime
-
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton,
     QTableWidget, QTableWidgetItem, QHeaderView, QMenu, QMessageBox
 )
 from PyQt6.QtCore import Qt
-
 from src.ui.styles.event_styles import EVENT_STYLE, TABELA_STYLE
 from src.ui.event_actions import (
-    criar_evento,
-    abrir_evento,
-    duplicar_evento,
-    excluir_evento,
-    renomear_evento
+    carregar_eventos, criar_evento, abrir_evento,
+    duplicar_evento, excluir_evento, renomear_evento
 )
+
+import os
 
 class EventWindow(QWidget):
     def __init__(self, controller):
@@ -24,7 +18,7 @@ class EventWindow(QWidget):
         self.setWindowTitle("Print A – Meus Eventos")
         self.setStyleSheet(EVENT_STYLE)
         self.setMinimumSize(1000, 650)
-        self.ordem_crescente = {0: True, 1: True}
+        self.ordem_crescente = {0: True, 1: True}  # nome, data
 
         layout = QVBoxLayout()
         self.setLayout(layout)
@@ -72,28 +66,8 @@ class EventWindow(QWidget):
         self.carregar_eventos()
 
     def carregar_eventos(self):
-        eventos = []
-        for nome in os.listdir("eventos"):
-            caminho = os.path.join("eventos", nome, "config", "settings.json")
-            if os.path.isfile(caminho):
-                try:
-                    with open(caminho, "r", encoding="utf-8") as f:
-                        data = json.load(f)
-
-                    data_crua = data.get("criado_em", "")
-                    try:
-                        dt_formatada = datetime.fromisoformat(data_crua).strftime("%d/%m/%Y Horário: %H:%M:%S")
-                    except Exception:
-                        dt_formatada = ""
-
-                    eventos.append({
-                        "nome": data.get("nome", nome),
-                        "data": dt_formatada
-                    })
-                except Exception as e:
-                    print(f"[ERRO] Falha ao ler evento '{nome}': {e}")
-        self.todos_eventos = eventos
-        self.exibir_eventos(eventos)
+        self.todos_eventos = carregar_eventos(self)
+        self.exibir_eventos(self.todos_eventos)
 
     def exibir_eventos(self, eventos):
         self.tabela.setRowCount(len(eventos))
@@ -158,7 +132,7 @@ class EventWindow(QWidget):
 
     def abrir_evento_clicado(self, row, _):
         nome = self.tabela.item(row, 0).text()
-        self.abrir_evento(nome)
+        abrir_evento(nome, self.controller)
 
     def abrir_menu_contexto(self, pos):
         index = self.tabela.indexAt(pos)
@@ -172,6 +146,5 @@ class EventWindow(QWidget):
             menu.exec(self.tabela.mapToGlobal(pos))
 
     def abrir_evento(self, nome_evento: str):
-        from src.ui.event_actions import abrir_evento as abrir_evento_action
         if nome_evento:
-            abrir_evento_action(nome_evento, self.controller)
+            self.controller.abrir_main_window(f"eventos/{nome_evento}/config/settings.json")

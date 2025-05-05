@@ -1,36 +1,13 @@
 import os
-import shutil
 import json
+import shutil
 from datetime import datetime
 from PyQt6.QtWidgets import QMessageBox, QInputDialog
 
-def carregar_eventos(parent=None):
-    eventos = []
-    eventos_path = "eventos"
-    if not os.path.exists(eventos_path):
-        os.makedirs(eventos_path)
-
-    for nome in sorted(os.listdir(eventos_path), key=lambda n: os.path.getmtime(os.path.join(eventos_path, n)), reverse=True):
-        caminho = os.path.join(eventos_path, nome)
-        if not os.path.isdir(caminho):
-            continue
-
-        config_path = os.path.join(caminho, "config", "settings.json")
-        data_modificacao = datetime.fromtimestamp(os.path.getmtime(caminho)).strftime("%d/%m/%Y %H:%M")
-
-        eventos.append({
-            "nome": nome,
-            "caminho": caminho,
-            "config": config_path,
-            "data": data_modificacao
-        })
-
-    return eventos
-
+# ✅ SUPREMO BLOCK: Criar Evento
 def criar_evento(callback, nome_evento=None):
     """
-    Cria um novo evento. Se nome_evento for passado, usa diretamente.
-    Caso contrário, abre diálogo para o usuário.
+    Cria um novo evento com estrutura obrigatória e gravação de settings.json com 'nome_evento'.
     """
     if nome_evento:
         nome = nome_evento
@@ -43,59 +20,91 @@ def criar_evento(callback, nome_evento=None):
         if not os.path.exists(caminho):
             os.makedirs(os.path.join(caminho, "Fotos"))
             os.makedirs(os.path.join(caminho, "config"))
+
             settings_path = os.path.join(caminho, "config", "settings.json")
-            with open(settings_path, "w") as f:
-                json.dump({}, f)
+            data = {
+                "nome_evento": nome,
+                "criado_em": datetime.now().isoformat()
+            }
+
+            with open(settings_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=4)
+
             print(f"[CRIADO] Evento: {nome}")
         else:
-            if not nome_evento:  # Só alerta se foi manual
+            if not nome_evento:
                 QMessageBox.warning(None, "Aviso", f"Já existe um evento com o nome '{nome}'.")
-        callback()
 
+        if callback:
+            callback()
+
+
+# ✅ SUPREMO BLOCK: Abrir Evento
 def abrir_evento(nome_evento, controller):
-    caminho_config = os.path.join("eventos", nome_evento, "config", "settings.json")
-    print(f"[CONFIG] Configurações carregadas: {caminho_config}")
-    controller.abrir_main_window(caminho_config)
+    """
+    Abre um evento existente chamando o método supremo do controller.
+    """
+    path = f"eventos/{nome_evento}/config/settings.json"
+    controller.abrir_main_window(path)
+    print(f"[ABERTO] Evento: {nome_evento}")
 
-def duplicar_evento(nome_evento, callback):
-    base_path = os.path.join("eventos", nome_evento)
-    novo_nome = f"{nome_evento}_copia"
-    novo_path = os.path.join("eventos", novo_nome)
-    count = 1
-    while os.path.exists(novo_path):
-        novo_path = os.path.join("eventos", f"{novo_nome}_{count}")
-        count += 1
+
+# ✅ SUPREMO BLOCK: Duplicar Evento
+def duplicar_evento(nome, callback):
+    """
+    Cria uma cópia do evento selecionado com sufixo _copia
+    """
+    origem = os.path.join("eventos", nome)
+    destino = os.path.join("eventos", f"{nome}_copia")
+    if os.path.exists(destino):
+        QMessageBox.warning(None, "Erro", "Já existe uma cópia deste evento.")
+        return
     try:
-        shutil.copytree(base_path, novo_path)
-        print(f"[DUPLICADO] {base_path} ➜ {novo_path}")
+        shutil.copytree(origem, destino)
+        print(f"[DUPLICADO] {nome} -> {nome}_copia")
         callback()
     except Exception as e:
-        print(f"[ERRO] ao duplicar: {e}")
-        QMessageBox.warning(None, "Erro", f"Erro ao duplicar o evento:\n{e}")
+        print(f"[ERRO] ao duplicar evento: {e}")
 
-def excluir_evento(nome_evento):
-    caminho = os.path.join("eventos", nome_evento)
-    try:
-        if os.path.isdir(caminho):
-            shutil.rmtree(caminho)
-        else:
-            os.remove(caminho)
-        print(f"[EXCLUÍDO] {caminho}")
-    except Exception as e:
-        print(f"[ERRO] ao excluir evento '{nome_evento}': {e}")
 
-def renomear_evento(nome_evento, callback):
-    novo_nome, ok = QInputDialog.getText(None, "Renomear Evento", "Digite o novo nome:", text=nome_evento)
-    if ok and novo_nome and novo_nome != nome_evento:
-        origem = os.path.join("eventos", nome_evento)
-        destino = os.path.join("eventos", novo_nome)
+# ✅ SUPREMO BLOCK: Excluir Evento
+def excluir_evento(nome):
+    """
+    Exclui evento e envia para backup automático em eventos_backup/
+    """
+    caminho = os.path.join("eventos", nome)
+    if os.path.exists(caminho):
+        destino_backup = os.path.join("eventos_backup", f"{nome}_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+        shutil.move(caminho, destino_backup)
+        print(f"[EXCLUÍDO] {caminho} -> {destino_backup}")
+
+
+# ✅ SUPREMO BLOCK: Renomear Evento
+def renomear_evento(nome_antigo, callback):
+    """
+    Renomeia evento mantendo estrutura e atualizando o nome_evento no settings.json
+    """
+    nome_novo, ok = QInputDialog.getText(None, "Renomear Evento", "Novo nome:")
+    if ok and nome_novo:
+        origem = os.path.join("eventos", nome_antigo)
+        destino = os.path.join("eventos", nome_novo)
         if os.path.exists(destino):
-            QMessageBox.warning(None, "Erro", "Já existe um evento com esse nome.")
-        else:
+            QMessageBox.warning(None, "Erro", "Já existe um evento com este nome.")
+            return
+        shutil.move(origem, destino)
+
+        # Atualiza o nome_evento no settings.json
+        settings_path = os.path.join(destino, "config", "settings.json")
+        if os.path.exists(settings_path):
             try:
-                os.rename(origem, destino)
-                print(f"[RENOMEADO] {origem} ➜ {destino}")
-                callback()
+                with open(settings_path, "r+", encoding="utf-8") as f:
+                    data = json.load(f)
+                    data["nome_evento"] = nome_novo
+                    f.seek(0)
+                    json.dump(data, f, indent=4)
+                    f.truncate()
             except Exception as e:
-                print(f"[ERRO] ao renomear: {e}")
-                QMessageBox.warning(None, "Erro", f"Erro ao renomear:\n{e}")
+                print(f"[ERRO] ao atualizar nome no settings: {e}")
+
+        print(f"[RENOMEADO] {nome_antigo} -> {nome_novo}")
+        callback()
